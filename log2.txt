@@ -1,0 +1,3 @@
+read all complete
+[ '降冰雹前1日20时500hPa，短波槽在90-100°E,35-50°N', undefined, false ]
+[ '当日08时500 hPa槽线在 102-105°E，33-40°N', undefined, false ]
