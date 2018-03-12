@@ -30,11 +30,11 @@ let parse_diamond5 = (data)=>{
             
             levels.contain.push(values[0]);
             levels[values[0]] = {
-                height: values[1],
-                T: values[2],
-                Td: values[3],
-                windDir: values[4],
-                windVal: values[5]
+                height: +values[1]*10,
+                T: +values[2],
+                Td: +values[3],
+                windDir: +values[4],
+                windVal: +values[5]
             }
         }
         
