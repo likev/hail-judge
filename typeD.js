@@ -8,29 +8,29 @@ const typeA = require('./typeA.js');
 
 //console.log(CONFIG);
 
-let judgeB1 = (TlogP_today)=>{
+let judgeD1 = (TlogP_today)=>{
     
     let data = TlogP_today;
     
-    let stations1 = ['50834','54102','53068','53336','53513'];
+    let stations1 = ['30935','44292','53068'];
     
-    let count300_360 = 0;
+    let count270_330 = 0;
     stations1.forEach( (id) => {
         //console.log(id+':'+JSON.stringify(data[id], null, 2));
-        if(data[id] && data[id]['500'] && judge.between(data[id]['500'].windDir, [300, 360]) ) ++count300_360;
+        if(data[id] && data[id]['500'] && judge.between(data[id]['500'].windDir, [270, 330]) ) ++count270_330;
     });
     
-    let stations2 = ['54135','54218','54401','53465','53543','54511'];
+    let stations2 = ['30965','50827','54102'];
     
-    let count250_60 = 0;
+    let count230_60 = 0;
     stations2.forEach( (id) => {
         //console.log(id+':'+JSON.stringify(data[id], null, 2));
-        if(data[id] && data[id]['500'] &&  judge.between(data[id]['500'].windDir, [60, 250]) ) ++count250_60;
+        if(data[id] && data[id]['500'] &&  judge.between(data[id]['500'].windDir, [60, 230]) ) ++count230_60;
     });
     
     //console.log('count270_330: ' + count270_330 + '  count250_60: ' + count250_60);
     
-    return count300_360 >=3 && count250_60 >= 4;
+    return count270_330 >=2 && count230_60 >= 2;
 }
 
 
@@ -38,9 +38,10 @@ exports.start = ()=>{
     TlogP.get()
         .then((datas)=>{
             
-            let judgeType = judge.create('横槽转竖型');
+            let judgeType = judge.create('西北气流下滑型');
             
-            judgeType.add('降冰雹前1日20时和当日08时500hPa图，有一低涡。位置 120-132°E,40-43°N。', judgeB1(datas.today08), -1);
+            judgeType.add('当日08时500hPa在蒙古到我国东北附近在42-48°N，115-119°E', judgeD1(datas.today08), -1);
+            
             judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
             judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', typeA.T_Td_850_or_700(datas.today08), -1);
             judgeType.add('200高空急流：风速≥30米/秒', typeA.jet_stream200(datas.today08), -1);
@@ -49,12 +50,12 @@ exports.start = ()=>{
             judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
             
             let count = judgeType.count();
-            console.log('\n---横槽转竖型 ( '+count.fulfilled+'/'+count.all+' )---')
+            console.log('\n---西北气流下滑型 ( '+count.fulfilled+'/'+count.all+' )---')
             
             let judgeType_all = judgeType.all();
             for(let item of judgeType_all){
                 
-                let tip = 'x';
+                let tip = 'x';//X
                 if(item[2]) tip = '√';
                 console.log('[ '+tip+' ] '+item[0]);
             }

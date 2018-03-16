@@ -153,7 +153,7 @@ let judgeA9 = (TlogP_today)=>{
 let judgeA10 = (TlogP_today)=>{
     let data = TlogP_today;
     
-    let stations1 = ['53915','53845','53772','53798','57083','57178'];
+    let stations1 = ['53915','53845','53772','53798','57083','57178','57067'];
     
     let count_T500 = 0;
     
@@ -186,7 +186,6 @@ exports.start = ()=>{
         .then((datas)=>{
             
             let judgeType = judge.create('西风短波槽');
-            console.log('\n---西风短波槽---')
             
             judgeType.add('降冰雹前1日20时500hPa，短波槽在90-100°E,35-50°N', judgeA1(datas.yesterday20), -1);
             judgeType.add('当日08时500 hPa槽线在 102-105°E，33-40°N', judgeA2(datas.today08), -1);
@@ -197,10 +196,13 @@ exports.start = ()=>{
             judgeType.add('500温度≤-9℃', judgeA10(datas.today08), -1);
             judgeType.add('Δt(t850-t500)≧30', judgeA13(datas.today08), -1);
             
+            let count = judgeType.count();
+            console.log('\n---西风短波槽 ( '+count.fulfilled+'/'+count.all+' )---')
+            
             let judgeType_all = judgeType.all();
             for(let item of judgeType_all){
                 
-                let tip = 'X';
+                let tip = 'x';
                 if(item[2]) tip = '√';
                 console.log('[ '+tip+' ] '+item[0]);
             }

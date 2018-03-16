@@ -63,8 +63,7 @@ exports.start = ()=>{
     TlogP.get()
         .then((datas)=>{
             
-            let judgeType = judge.create('华北冷涡型');
-            console.log('\n---华北冷涡型---')
+            let judgeType = judge.create('华北冷涡型 1');
             
             judgeType.add('500hPa前1日20时高空有冷涡。109-113°E ,40-43°', judgeC1(datas.yesterday20), -1);
             judgeType.add('500hPa当日08时冷涡位置：110-114°E,36-40°N', judgeC2(datas.today08), -1);
@@ -75,10 +74,13 @@ exports.start = ()=>{
             judgeType.add('500温度≤-9℃', typeA.T500(datas.today08), -1);
             judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
             
+            let count = judgeType.count();
+            console.log('\n---华北冷涡型 1 ( '+count.fulfilled+'/'+count.all+' )---')
+            
             let judgeType_all = judgeType.all();
             for(let item of judgeType_all){
                 
-                let tip = 'X';
+                let tip = 'x';
                 if(item[2]) tip = '√';
                 console.log('[ '+tip+' ] '+item[0]);
             }

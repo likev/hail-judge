@@ -1,9 +1,9 @@
 
 
-let judge_create = (title)=>{
+let judge_create = (type)=>{
     
-    let judge_title = title;
-    let fulfill_count = 0;
+    let judge_type = type;
+    let all_count = 0, fulfill_count = 0, reject_count = 0;
     let fulfill_conditions = [], reject_conditions = [], all_conditions = [];
     
     let judge = {};
@@ -17,15 +17,31 @@ let judge_create = (title)=>{
             
         }else{
             
+            reject_count++;
             reject_conditions.push([description, val]);
         }
         
+        all_count++;
         all_conditions.push([description, val, condition]);
     }
     
-    judge.atleast = (count)=>{
+    judge.type = ()=>{
         
-        return fulfill_count >= count;
+        return judge_type;
+    }
+    
+    judge.count = ()=>{
+        
+        return {
+            all      : all_count,
+            fulfilled: fulfill_count,
+            rejected : reject_count
+        };
+    }
+    
+    judge.atleast = (ratio)=>{
+        
+        return fulfill_count/all_count >= ratio;
     }
     
     judge.fulfilled = ()=>{
