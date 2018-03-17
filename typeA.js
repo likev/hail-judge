@@ -1,7 +1,4 @@
-const fs = require('fs');
-const util = require('util');
 
-const CONFIG = require('./config.json');
 const judge = require('./conditionJudge.js');
 const TlogP = require('./TlogP.js');
 
@@ -181,33 +178,31 @@ let judgeA13 = (TlogP_today)=>{
     return count_T850_500 >= 2;
 }
 
-exports.start = ()=>{
-    TlogP.get()
-        .then((datas)=>{
+exports.start = async ()=>{
+    let datas = await TlogP.get();
             
-            let judgeType = judge.create('西风短波槽');
-            
-            judgeType.add('降冰雹前1日20时500hPa，短波槽在90-100°E,35-50°N', judgeA1(datas.yesterday20), -1);
-            judgeType.add('当日08时500 hPa槽线在 102-105°E，33-40°N', judgeA2(datas.today08), -1);
-            judgeType.add('T850-T500 湿度差大于20℃', judgeA5(datas.today08), -1);
-            judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', judgeA7(datas.today08), -1);
-            judgeType.add('200高空急流：风速≥30米/秒', judgeA8(datas.today08), -1);
-            judgeType.add('500高空急流：风速≥16米/秒', judgeA9(datas.today08), -1);
-            judgeType.add('500温度≤-9℃', judgeA10(datas.today08), -1);
-            judgeType.add('Δt(t850-t500)≧30', judgeA13(datas.today08), -1);
-            
-            let count = judgeType.count();
-            console.log('\n---西风短波槽 ( '+count.fulfilled+'/'+count.all+' )---')
-            
-            let judgeType_all = judgeType.all();
-            for(let item of judgeType_all){
-                
-                let tip = 'x';
-                if(item[2]) tip = '√';
-                console.log('[ '+tip+' ] '+item[0]);
-            }
-            
-        });    
+    let judgeType = judge.create('西风短波槽');
+    
+    judgeType.add('降冰雹前1日20时500hPa，短波槽在90-100°E,35-50°N', judgeA1(datas.yesterday20), -1);
+    judgeType.add('当日08时500 hPa槽线在 102-105°E，33-40°N', judgeA2(datas.today08), -1);
+    judgeType.add('T850-T500 湿度差大于20℃', judgeA5(datas.today08), -1);
+    judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', judgeA7(datas.today08), -1);
+    judgeType.add('200高空急流：风速≥30米/秒', judgeA8(datas.today08), -1);
+    judgeType.add('500高空急流：风速≥16米/秒', judgeA9(datas.today08), -1);
+    judgeType.add('500温度≤-9℃', judgeA10(datas.today08), -1);
+    judgeType.add('Δt(t850-t500)≧30', judgeA13(datas.today08), -1);
+    
+    let count = judgeType.count();
+    console.log('\n---西风短波槽 ( '+count.fulfilled+'/'+count.all+' )---')
+    
+    let judgeType_all = judgeType.all();
+    for(let item of judgeType_all){
+        
+        let tip = 'x';
+        if(item[2]) tip = '√';
+        console.log('[ '+tip+' ] '+item[0]);
+    }
+           
     
 }
 

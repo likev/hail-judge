@@ -1,7 +1,4 @@
-const fs = require('fs');
-const util = require('util');
 
-const CONFIG = require('./config.json');
 const judge = require('./conditionJudge.js');
 const TlogP = require('./TlogP.js');
 
@@ -107,29 +104,26 @@ let judgeX7 = (TlogP_today)=>{
     return count_T_Td >= 1;
 }
 
-exports.start = ()=>{
-    TlogP.get()
-        .then((datas)=>{
-            
-            let judgeType = judge.create('探空站物理量');
-            
-            judgeType.add('反映 K与SI指数', judgeX1(datas.today08), -1);
-            judgeType.add('0℃层高度在3500-5000米。-20℃高度在6200-7500米', judgeX5(datas.today08), -1);
-            judgeType.add('风速的垂直切变（v500-v850) ≥7米/秒', judgeX6(datas.today08), -1);
-            judgeType.add('t-td 及上下层的差值，当850hPa下层任意一层（不含850）t-td ≤5.且700 或 500hPa（t-td）≥22', judgeX7(datas.today08), -1);
-            
-            let count = judgeType.count();
-            console.log('\n---探空站物理量 ( '+count.fulfilled+'/'+count.all+' )---')
-            
-            let judgeType_all = judgeType.all();
-            for(let item of judgeType_all){
-                
-                let tip = 'x';
-                if(item[2]) tip = '√';
-                console.log('[ '+tip+' ] '+item[0]);
-            }
-            
-        });
+exports.start = async ()=>{
+    let datas = await TlogP.get();
+    
+    let judgeType = judge.create('探空站物理量');
+    
+    judgeType.add('反映 K与SI指数', judgeX1(datas.today08), -1);
+    judgeType.add('0℃层高度在3500-5000米。-20℃高度在6200-7500米', judgeX5(datas.today08), -1);
+    judgeType.add('风速的垂直切变（v500-v850) ≥7米/秒', judgeX6(datas.today08), -1);
+    judgeType.add('t-td 及上下层的差值，当850hPa下层任意一层（不含850）t-td ≤5.且700 或 500hPa（t-td）≥22', judgeX7(datas.today08), -1);
+    
+    let count = judgeType.count();
+    console.log('\n---探空站物理量 ( '+count.fulfilled+'/'+count.all+' )---')
+    
+    let judgeType_all = judgeType.all();
+    for(let item of judgeType_all){
+        
+        let tip = 'x';
+        if(item[2]) tip = '√';
+        console.log('[ '+tip+' ] '+item[0]);
+    }
 
 }
 /*

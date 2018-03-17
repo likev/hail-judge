@@ -1,7 +1,4 @@
-const fs = require('fs');
-const util = require('util');
 
-const CONFIG = require('./config.json');
 const judge = require('./conditionJudge.js');
 const TlogP = require('./TlogP.js');
 const typeA = require('./typeA.js');
@@ -102,34 +99,32 @@ let judgeE6 = (TlogP_today)=>{
 }
 
 
-exports.start = ()=>{
-    TlogP.get()
-        .then((datas)=>{
+exports.start = async ()=>{
+    let datas = await TlogP.get();
             
-            let judgeType = judge.create('华北冷涡型 2');
-            
-            judgeType.add('500hPa ＞5站以上风向270-340°，＞5个站250-60°', judgeE1(datas.today08), -1);
-            judgeType.add('700hPa ＞6站以上风向270-340°，＞6个站250-60°', judgeE4(datas.today08), -1);
-            judgeType.add('850hPa ＞6站以上风向270-340°，＞6个站250-60°', judgeE6(datas.today08), -1);
-            
-            judgeType.add('700hPa ＞10站以上 风速≥12m/s', judgeE5(datas.today08), -1);
-            //judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
-            judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', typeA.T_Td_850_or_700(datas.today08), -1);
-            judgeType.add('200高空急流：风速≥30米/秒', typeA.jet_stream200(datas.today08), -1);
-            judgeType.add('500高空急流：风速≥16米/秒', typeA.jet_stream500(datas.today08), -1);
-            judgeType.add('500温度≤-9℃', typeA.T500(datas.today08), -1);
-            judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
-            
-            let count = judgeType.count();
-            console.log('\n---华北冷涡型 2 ( '+count.fulfilled+'/'+count.all+' )---')
-            
-            let judgeType_all = judgeType.all();
-            for(let item of judgeType_all){
-                
-                let tip = 'x';//X
-                if(item[2]) tip = '√';
-                console.log('[ '+tip+' ] '+item[0]);
-            }
-            
-        });
+    let judgeType = judge.create('华北冷涡型 2');
+    
+    judgeType.add('500hPa ＞5站以上风向270-340°，＞5个站250-60°', judgeE1(datas.today08), -1);
+    judgeType.add('700hPa ＞6站以上风向270-340°，＞6个站250-60°', judgeE4(datas.today08), -1);
+    judgeType.add('850hPa ＞6站以上风向270-340°，＞6个站250-60°', judgeE6(datas.today08), -1);
+    
+    judgeType.add('700hPa ＞10站以上 风速≥12m/s', judgeE5(datas.today08), -1);
+    //judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
+    judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', typeA.T_Td_850_or_700(datas.today08), -1);
+    judgeType.add('200高空急流：风速≥30米/秒', typeA.jet_stream200(datas.today08), -1);
+    judgeType.add('500高空急流：风速≥16米/秒', typeA.jet_stream500(datas.today08), -1);
+    judgeType.add('500温度≤-9℃', typeA.T500(datas.today08), -1);
+    judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
+    
+    let count = judgeType.count();
+    console.log('\n---华北冷涡型 2 ( '+count.fulfilled+'/'+count.all+' )---')
+    
+    let judgeType_all = judgeType.all();
+    for(let item of judgeType_all){
+        
+        let tip = 'x';//X
+        if(item[2]) tip = '√';
+        console.log('[ '+tip+' ] '+item[0]);
+    }
+        
 }

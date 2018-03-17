@@ -1,7 +1,7 @@
 const fs = require('fs');
 const util = require('util');
 
-const CONFIG = require('./config.json');
+const CONFIG = require('./config.js');
 const judge = require('./conditionJudge.js');
 
 //console.log(CONFIG);
@@ -52,9 +52,16 @@ const readFile = util.promisify(fs.readFile);
 
 async function readTlogP(filepath){
     
-    const TlogP_today = await readFile(filepath, 'ascii');
+    let contents = '';
+    try{
+        contents = await readFile(filepath, 'ascii');
+    }catch(error){
+        
+        console.log(error);
+    }
+    
 
-    return parse_diamond5(TlogP_today);
+    return parse_diamond5(contents);
     
 }
 
@@ -62,10 +69,12 @@ const TlogP = {};
 let isReadAllSuccessed = false;
 
 async function readAll(){
-
-    const pathTlogP_yesterday20 = CONFIG.pathTlogP+'/'+CONFIG.yesterday+'20.000';
     
-    const pathTlogP_today08 = CONFIG.pathTlogP+'/'+CONFIG.today+'08.000';
+    //console.log(CONFIG)
+
+    const pathTlogP_yesterday20 = CONFIG.pathTlogP() +'/'+CONFIG.yesterday()+'20.000';
+    
+    const pathTlogP_today08 = CONFIG.pathTlogP() +'/'+CONFIG.today()+'08.000';
     
     let read_yesterday20 = readTlogP(pathTlogP_yesterday20), read_today08 = readTlogP(pathTlogP_today08); 
     
@@ -82,4 +91,10 @@ exports.get = async function(){
     
     if(isReadAllSuccessed) return TlogP;
     else return await readAll();
+}
+
+exports.update = function(){
+    
+    isReadAllSuccessed = false;
+    //readAll();
 }

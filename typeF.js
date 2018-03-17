@@ -1,7 +1,4 @@
-const fs = require('fs');
-const util = require('util');
 
-const CONFIG = require('./config.json');
 const judge = require('./conditionJudge.js');
 const TlogP = require('./TlogP.js');
 const typeA = require('./typeA.js');
@@ -81,33 +78,31 @@ let judgeF3 = (TlogP_today)=>{
 }
 
 
-exports.start = ()=>{
-    TlogP.get()
-        .then((datas)=>{
+exports.start = async ()=>{
+    let datas = await TlogP.get();
             
-            let judgeType = judge.create('低槽型');
+    let judgeType = judge.create('低槽型');
+    
+    judgeType.add('500hpa ＞9个站 270-340°，＞9个站250-60°', judgeF1(datas.today08), -1);
+    judgeType.add('700hpa ＞8个站 270-340°，＞8个站250-60°', judgeF2(datas.today08), -1);
+    judgeType.add('850hpa ＞9个站 270-340°，＞9个站250-60°', judgeF3(datas.today08), -1);
+    
+    //judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
+    judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', typeA.T_Td_850_or_700(datas.today08), -1);
+    judgeType.add('200高空急流：风速≥30米/秒', typeA.jet_stream200(datas.today08), -1);
+    judgeType.add('500高空急流：风速≥16米/秒', typeA.jet_stream500(datas.today08), -1);
+    //judgeType.add('500温度≤-9℃', typeA.T500(datas.today08), -1);
+    judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
+    
+    let count = judgeType.count();
+    console.log('\n---低槽型 ( '+count.fulfilled+'/'+count.all+' )---')
+    
+    let judgeType_all = judgeType.all();
+    for(let item of judgeType_all){
+        
+        let tip = 'x';//X
+        if(item[2]) tip = '√';
+        console.log('[ '+tip+' ] '+item[0]);
+    }
             
-            judgeType.add('500hpa ＞9个站 270-340°，＞9个站250-60°', judgeF1(datas.today08), -1);
-            judgeType.add('700hpa ＞8个站 270-340°，＞8个站250-60°', judgeF2(datas.today08), -1);
-            judgeType.add('850hpa ＞9个站 270-340°，＞9个站250-60°', judgeF3(datas.today08), -1);
-            
-            //judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
-            judgeType.add('高空700 hPa,850 hPa任一层 湿度差≤4.0℃', typeA.T_Td_850_or_700(datas.today08), -1);
-            judgeType.add('200高空急流：风速≥30米/秒', typeA.jet_stream200(datas.today08), -1);
-            judgeType.add('500高空急流：风速≥16米/秒', typeA.jet_stream500(datas.today08), -1);
-            //judgeType.add('500温度≤-9℃', typeA.T500(datas.today08), -1);
-            judgeType.add('Δt(t850-t500)≧30', typeA.T850_500(datas.today08), -1);
-            
-            let count = judgeType.count();
-            console.log('\n---低槽型 ( '+count.fulfilled+'/'+count.all+' )---')
-            
-            let judgeType_all = judgeType.all();
-            for(let item of judgeType_all){
-                
-                let tip = 'x';//X
-                if(item[2]) tip = '√';
-                console.log('[ '+tip+' ] '+item[0]);
-            }
-            
-        });
 }
