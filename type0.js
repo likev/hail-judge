@@ -107,7 +107,7 @@ let judgeX7 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
     
-    let judgeType = judge.create('探空站物理量');
+    let judgeType = judge.create('0');
     
     judgeType.add('反映 K与SI指数', judgeX1(datas.today08), -1);
     judgeType.add('0℃层高度在3500-5000米。-20℃高度在6200-7500米', judgeX5(datas.today08), -1);
@@ -124,6 +124,8 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
+    
+    return judgeType;
 
 }
 /*

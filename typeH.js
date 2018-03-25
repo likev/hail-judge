@@ -92,7 +92,7 @@ exports.start = async ()=>{
 
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('偏北气流型');
+    let judgeType = judge.create('H');
     
     judgeType.add('500hpa ＞10个站 风向270-340°', judgeH1(datas.today08), -1);
     judgeType.add('700hpa ＞3个站 风向270-340°，＞3个站以上，风向在250-60°', judgeH2(datas.today08), -1);
@@ -115,6 +115,6 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
-            
+    return judgeType;        
 
 }

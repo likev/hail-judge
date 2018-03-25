@@ -34,7 +34,7 @@ let judgeD1 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('西北气流下滑型');
+    let judgeType = judge.create('D');
     
     judgeType.add('当日08时500hPa在蒙古到我国东北附近在42-48°N，115-119°E', judgeD1(datas.today08), -1);
     
@@ -55,5 +55,5 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
-            
+    return judgeType;        
 }

@@ -34,7 +34,7 @@ let judgeB1 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('横槽转竖型');
+    let judgeType = judge.create('B');
     
     judgeType.add('降冰雹前1日20时和当日08时500hPa图，有一低涡。位置 120-132°E,40-43°N。', judgeB1(datas.today08), -1);
     judgeType.add('T850-T500 湿度差大于20℃', typeA.T_Td_850_500(datas.today08), -1);
@@ -54,5 +54,7 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
+    
+    return judgeType;
 
 }

@@ -59,7 +59,7 @@ let judgeC2 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('华北冷涡型 1');
+    let judgeType = judge.create('C');
     
     judgeType.add('500hPa前1日20时高空有冷涡。109-113°E ,40-43°', judgeC1(datas.yesterday20), -1);
     judgeType.add('500hPa当日08时冷涡位置：110-114°E,36-40°N', judgeC2(datas.today08), -1);
@@ -80,5 +80,6 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
-            
+    
+    return judgeType;
 }

@@ -181,7 +181,7 @@ let judgeA13 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('西风短波槽');
+    let judgeType = judge.create('A');
     
     judgeType.add('降冰雹前1日20时500hPa，短波槽在90-100°E,35-50°N', judgeA1(datas.yesterday20), -1);
     judgeType.add('当日08时500 hPa槽线在 102-105°E，33-40°N', judgeA2(datas.today08), -1);
@@ -203,7 +203,7 @@ exports.start = async ()=>{
         console.log('[ '+tip+' ] '+item[0]);
     }
            
-    
+    return judgeType;
 }
 
 exports.T_Td_850_500 = judgeA5;

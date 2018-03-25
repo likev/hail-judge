@@ -6,6 +6,19 @@ let judge_create = (type)=>{
     let all_count = 0, fulfill_count = 0, reject_count = 0;
     let fulfill_conditions = [], reject_conditions = [], all_conditions = [];
     
+    let type_descriptions = {
+        '0':'探空站物理量',
+        'A':'西风短波槽',
+        'B':'横槽转竖型',
+        'C':'华北冷涡型 1',
+        'D':'西北气流下滑型',
+        'E':'华北冷涡型 2',
+        'F':'低槽型',
+        'G':'横槽型',
+        'H':'偏北气流型'
+        
+    }
+    
     let judge = {};
     
     judge.add = (description, condition, val)=>{
@@ -28,6 +41,11 @@ let judge_create = (type)=>{
     judge.type = ()=>{
         
         return judge_type;
+    }
+    
+    judge.describe = ()=>{
+        
+        return type_descriptions[judge_type];
     }
     
     judge.count = ()=>{

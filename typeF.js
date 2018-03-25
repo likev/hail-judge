@@ -81,7 +81,7 @@ let judgeF3 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('低槽型');
+    let judgeType = judge.create('F');
     
     judgeType.add('500hpa ＞9个站 270-340°，＞9个站250-60°', judgeF1(datas.today08), -1);
     judgeType.add('700hpa ＞8个站 270-340°，＞8个站250-60°', judgeF2(datas.today08), -1);
@@ -104,5 +104,5 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
-            
+    return judgeType;        
 }

@@ -98,3 +98,27 @@ exports.update = function(){
     isReadAllSuccessed = false;
     //readAll();
 }
+
+
+const readdir = util.promisify(fs.readdir);
+const stat = util.promisify(fs.stat);
+
+exports.file_list = async function(){
+    
+    let files = await readdir( CONFIG.pathTlogP() );
+    
+    let result = [];
+    
+    for(let file of files){
+        
+        let statObj = await stat(CONFIG.pathTlogP() +'/'+ file);
+        if( statObj.isFile() ) result.push(file.slice(0, 6));
+    }
+    
+    let files_set = new Set(result);
+    
+    result = [...files_set];
+    
+    return result.sort().reverse();
+    
+}

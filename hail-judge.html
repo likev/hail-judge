@@ -1,0 +1,208 @@
+<!doctype html>
+
+<html>
+
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
+		<meta content="冰雹潜势预报" name="description"/>
+	
+		<title>冰雹潜势预报</title>
+		
+		    <!-- 新 Bootstrap 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		  <script src="https://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		  <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+		<style>
+			html, body, .fullheight{
+				height:100%;
+			}
+            
+            .hail-type{
+                margin-top: 30px;
+            }
+
+		</style>
+		
+	</head>
+
+	<body>
+        <div class="container">
+
+			<div class="page-header">
+			  <h1>冰雹潜势预报</h1>
+			</div>
+			
+			
+	    </div>
+        
+		
+		<div class="container">
+		<!-- Tab panes -->
+			<div class='row'>
+				<form class="form-inline">
+ 
+				 <div class="form-group col-md-3 col-xs-6">
+					<select id="datestr" class="form-control">
+                        <option value="160730" selected="">160730</option>
+                        <option value="160605">160605</option>
+                        <option value="150830">150830</option>
+                    </select>
+				</div>
+				
+				<div class="form-group col-md-3 col-xs-6">
+					<button class="btn btn-primary" type="button" id="updata">计算潜势</button>
+				</div>
+                
+                <div class="col-md-3 col-xs-6">
+                    <div id='show-result' class="alert alert-info hidden" role="alert">无潜势</div>
+                    <!-- <div class="alert alert-danger hidden" role="alert">有潜势</div> -->
+                </div>
+				
+				</form>
+			</div>
+            
+            
+			
+		</div>
+        
+        <div class="container" id='hail-type-all'>
+            <div class='row hail-type'>
+                <div class='panel panel-default'>
+                  <div class='panel-heading'>Panel heading</div>
+                  <!-- List group -->
+                  <ul class='list-group'>
+                    <li class='list-group-item'>Cras justo odio</li>
+                    <li class='list-group-item'>Dapibus ac facilisis in</li>
+                    <li class='list-group-item'>Morbi leo risus</li>
+                    <li class='list-group-item'>Porta ac consectetur ac</li>
+                    <li class='list-group-item'>Vestibulum at eros</li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+	
+		<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+		<script src="https://cdn.bootcss.com/moment.js/2.13.0/moment.min.js"></script>
+		
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+		<script src="https://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+		<script>
+		
+		</script>
+		<script>
+ 
+			var app = {};
+            var TlogP_list_json = [];
+            
+            app.onready = function(){
+                var htmlstr = ''; //
+                
+                TlogP_list_json.forEach(function(file){
+                    
+                    htmlstr += '<option value="'+file+'">'+file+'</option>';
+                
+                })
+                
+                $('#datestr').html(htmlstr);
+                
+            }
+		
+			app.rhdata = [];
+            
+            
+            
+			app.update = function(){
+            
+                var tlogp_count_fulfilled = 0;
+                var max_count_fulfilled = 0;
+            
+				var htmlstr = '';
+				$.each(app.rhdata, function( index, type ) {
+                    var fulfilled = type.count.fulfilled;
+					htmlstr += "<div class='row hail-type'>";
+                    htmlstr += "<div class='panel panel-default'>";
+                    htmlstr += "<div class='panel-heading'>"+type.description+' ( '+ fulfilled +'/'+type.count.all+" )</div>";
+                    htmlstr += "<ul class='list-group'>";
+                    
+                    if('0' === type.type) tlogp_count_fulfilled = fulfilled;
+                    else if(fulfilled > max_count_fulfilled) max_count_fulfilled = fulfilled;
+                    
+                    $.each(type.all, function( index, item ) {
+                        
+                        var tip = 'x';
+                        if(item[2]) tip = '√';
+                        
+                        //console.log('[ '+tip+' ] '+item[0]);
+                        htmlstr += "<li class='list-group-item'>" + '[ '+tip+' ] '+item[0] + '</li>';
+                    
+                    })
+                    
+                    htmlstr += '</ul></div></div>'
+				});
+                
+                if(tlogp_count_fulfilled > 0 && 
+                    tlogp_count_fulfilled + max_count_fulfilled >= 3){
+                    $('#show-result').removeClass('alert-info hidden').addClass('alert-danger').text('有潜势');
+                }else{
+                
+                    $('#show-result').removeClass('alert-danger hidden').addClass('alert-info').text('无潜势');
+                }
+				
+				$('#hail-type-all').html(htmlstr);
+			}
+		
+			var timedata = moment().subtract(1, 'days');
+			
+			//InitialTime
+			var setInitialTime = function(){
+				$('#InitialTime').val(timedata.format('YYYY-MM-DD'));
+			}
+			setInitialTime();
+			
+			var updateData = function(){
+				var daystr = timedata.format('YYYYMMDD');
+				$.post( "/post", 
+					{datestr:$('#datestr').val()  }, 
+					function( data ) {
+					  app.rhdata = data;
+					  app.update();
+					}, 
+					"json")
+					.always(function(){
+						$('#updata').removeAttr('disabled');
+					});
+			}
+			
+			$('#updata').click(function(){
+				$(this).attr('disabled', 'disabled');
+				$('#hail-type-all').html('');
+                $('#show-result').addClass('hidden')
+				updateData();	
+			});
+			
+			$('.forward, .backward').click(function(){
+				if( $(this).hasClass('backward') ){
+					timedata.subtract(1, 'days');
+				}else{
+					timedata.add(1, 'days');
+				}
+				
+				setInitialTime();
+				//updateData();
+			})
+			
+			$('#updata').click();//initial request
+
+
+            

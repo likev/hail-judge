@@ -102,7 +102,7 @@ let judgeE6 = (TlogP_today)=>{
 exports.start = async ()=>{
     let datas = await TlogP.get();
             
-    let judgeType = judge.create('华北冷涡型 2');
+    let judgeType = judge.create('E');
     
     judgeType.add('500hPa ＞5站以上风向270-340°，＞5个站250-60°', judgeE1(datas.today08), -1);
     judgeType.add('700hPa ＞6站以上风向270-340°，＞6个站250-60°', judgeE4(datas.today08), -1);
@@ -126,5 +126,5 @@ exports.start = async ()=>{
         if(item[2]) tip = '√';
         console.log('[ '+tip+' ] '+item[0]);
     }
-        
+    return judgeType;    
 }
