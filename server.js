@@ -70,8 +70,8 @@ let startHttpServer = function(){
 		  
 		}
 		
-	}).listen(8086,()=>{
-	   console.log('listen on port 8086...');
+	}).listen(8087,()=>{
+	   console.log('listen on port 8087...');
 	 });
 }
 
@@ -84,7 +84,7 @@ startHttpServer();
 exports.start = function(){
 	startHttpServer();
     
-    exec('start http://127.0.0.1:8086', (err, stdout, stderr) => {
+    exec('start http://127.0.0.1:8087', (err, stdout, stderr) => {
       // ...
     });
 }
