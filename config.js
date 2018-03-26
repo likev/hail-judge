@@ -1,4 +1,7 @@
 var moment = require('moment');
+const path = require('path');
+const util = require('util');
+const fs = require('fs');
 
 const CONFIG = require('./config.json');
 const TlogP = require('./TlogP.js');
@@ -18,7 +21,7 @@ exports.yesterday = ()=>{
                 .format("YYMMDD");
 }
 
-let set_date = (datestr)=>{
+exports.set_date = (datestr)=>{
     //console.log(datestr);
     datestr = datestr.trim();
     if(datestr.length === 6){
@@ -32,9 +35,20 @@ let set_date = (datestr)=>{
     TlogP.update();
 }
 
+exports.set_dir = async (dirname)=>{
+    
+	CONFIG.pathTlogP = dirname;
+	
+	const writeFile = util.promisify(fs.writeFile);
+	
+	await writeFile( path.join( __dirname, 'config.json' ), 
+		JSON.stringify(CONFIG, null, 2) );
+    
+    TlogP.update();
+}
+
 //set_date('');
 
-exports.set_date = set_date;
 
 
 

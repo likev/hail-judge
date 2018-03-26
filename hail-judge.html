@@ -29,6 +29,10 @@
             .hail-type{
                 margin-top: 30px;
             }
+			
+			.margin-top-30px{
+				margin-top: 30px;
+			}
 
 		</style>
 		
@@ -47,31 +51,34 @@
 		
 		<div class="container">
 		<!-- Tab panes -->
-			<div class='row'>
+			<div class='row'> 
 				<form class="form-inline">
- 
-				 <div class="form-group col-md-3 col-xs-6">
-					<select id="datestr" class="form-control">
-                        <option value="160730" selected="">160730</option>
-                        <option value="160605">160605</option>
-                        <option value="150830">150830</option>
-                    </select>
-				</div>
-				
-				<div class="form-group col-md-3 col-xs-6">
-					<button class="btn btn-primary" type="button" id="updata">计算潜势</button>
-				</div>
-                
-                <div class="col-md-3 col-xs-6">
-                    <div id='show-result' class="alert alert-info hidden" role="alert">无潜势</div>
-                    <!-- <div class="alert alert-danger hidden" role="alert">有潜势</div> -->
-                </div>
-				
+					<div class="form-group col-md-6 col-xs-12">
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1">TlogP目录</span>
+						  <input id='dirname' type="text" class="form-control" placeholder="H:\high\tlogp" aria-describedby="basic-addon1">
+						</div>
+						<button class="btn btn-primary" type="button" id="set-dir">设置</button>
+					</div>
+					
+					<div class="form-group col-md-4 col-xs-12">
+						<select id="datestr" class="form-control">
+							<option value="160730" selected="">160730</option>
+							<option value="160605">160605</option>
+							<option value="150830">150830</option>
+						</select>
+						
+						<button class="btn btn-primary" type="button" id="updata">计算潜势</button>
+					</div>
 				</form>
+			 </div>
+			 
+			 <div class='row margin-top-30px'>			
+			    <div class="col-md-3 col-xs-6">
+						<div id='show-result' class="alert alert-info hidden" role="alert">无潜势</div>
+						<!-- <div class="alert alert-danger hidden" role="alert">有潜势</div> -->
+				</div>
 			</div>
-            
-            
-			
 		</div>
         
         <div class="container" id='hail-type-all'>
@@ -103,21 +110,27 @@
 		<script>
  
 			var app = {};
-            var TlogP_list_json = [];
-            
-            app.onready = function(){
-                var htmlstr = ''; //
+			
+			app.TlogP_dirname = 'H:/high/tlogp';
+            app.TlogP_list_json = [];
+			
+			app.updateList = function(){
+				$('#dirname').val(app.TlogP_dirname);
+				
+				var htmlstr = ''; //
                 
-                TlogP_list_json.forEach(function(file){
+                app.TlogP_list_json.forEach(function(file){
                     
                     htmlstr += '<option value="'+file+'">'+file+'</option>';
                 
                 })
+				
+				if(!htmlstr) htmlstr = '<option value="0">目录为空</option>';
                 
                 $('#datestr').html(htmlstr);
                 
 				$('#updata').click();//initial request
-            }
+			}
 		
 			app.rhdata = [];
             
@@ -174,7 +187,7 @@
 			var updateData = function(){
 				var daystr = timedata.format('YYYYMMDD');
 				$.post( "/post", 
-					{datestr:$('#datestr').val()  }, 
+					{action:'calc', datestr:$('#datestr').val()  }, 
 					function( data ) {
 					  app.rhdata = data;
 					  app.update();
@@ -184,6 +197,21 @@
 						$('#updata').removeAttr('disabled');
 					});
 			}
+			
+			$('#set-dir').click(function(){
+				
+				$.post( "/post", 
+					{action:'set-dir', dirname:$('#dirname').val()  }, 
+					function( data ) {
+					  app.TlogP_list_json = data;
+					  app.TlogP_dirname = $('#dirname').val();
+					  app.updateList();
+					}, 
+					"json")
+					.always(function(){
+						//$('#updata').removeAttr('disabled');
+					});
+			})
 			
 			$('#updata').click(function(){
 				$(this).attr('disabled', 'disabled');

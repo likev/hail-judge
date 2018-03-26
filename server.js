@@ -1,6 +1,8 @@
 "use strict";
 
 const fs = require('fs');
+const path = require('path');
+
 const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
@@ -8,12 +10,13 @@ const { exec } = require('child_process');
 
 const {judge_date} = require('./judge-date.js');
 const TlogP = require('./TlogP.js');
-
+const CONFIG = require('./config.js');
 
 let writeAlertJsonInfo = async function(req, res){
 	
-	res.write('TlogP_list_json = '+ JSON.stringify(await TlogP.file_list())+ ';' );
-	res.write('app.onready();');
+	res.write('app.TlogP_dirname = '+ JSON.stringify(CONFIG.pathTlogP() )+ ';' );
+	res.write('app.TlogP_list_json = '+ JSON.stringify(await TlogP.file_list())+ ';' );
+	res.write('app.updateList();');
 	res.write('</script></body></html>');
 	res.end();
 }
@@ -22,7 +25,7 @@ let homepage = function(req, res){
 	res.writeHead(200, {'Content-Type':'text/html'});
 
 	//console.log(__dirname);
-	let rs = fs.createReadStream("./hail-judge.html");
+	let rs = fs.createReadStream( path.join( __dirname, "hail-judge.html" ) );
 
 	rs.pipe(res, {end:false});
 	rs.on('end', ()=>{
@@ -38,6 +41,18 @@ let newItem = async function(req, res, config){
 	config.response = res;
     
     let result = await judge_date(config.datestr);
+	
+	res.end( JSON.stringify(result) );
+	
+}
+
+let setDir = async function(req, res, config){
+	res.writeHead(200, {'Content-Type':'application/json'});
+	
+	//config.response = res;
+	await CONFIG.set_dir(config.dirname);
+    
+    let result = await TlogP.file_list();
 	
 	res.end( JSON.stringify(result) );
 	
@@ -64,7 +79,9 @@ let startHttpServer = function(){
 			req.on('end', function(){    
 				config = querystring.parse(post);
 				console.log(config);
-				newItem(req, res, config);
+				
+				if(config.action === 'calc') newItem(req, res, config);
+				else if(config.action === 'set-dir') setDir(req, res, config);
 			});
 		  		  
 		  

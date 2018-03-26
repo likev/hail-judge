@@ -104,15 +104,21 @@ const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
 
 exports.file_list = async function(){
-    
-    let files = await readdir( CONFIG.pathTlogP() );
-    
-    let result = [];
-    
-    for(let file of files){
+
+	
+    let files = [], result = [];
+	try{
+		files = await readdir( CONFIG.pathTlogP() );
+		
+		for(let file of files){
+			
+			let statObj = await stat(CONFIG.pathTlogP() +'/'+ file);
+			if( statObj.isFile() ) result.push(file.slice(0, 6));
+		}
+	
+	}catch(error){
         
-        let statObj = await stat(CONFIG.pathTlogP() +'/'+ file);
-        if( statObj.isFile() ) result.push(file.slice(0, 6));
+        console.log(error);
     }
     
     let files_set = new Set(result);
