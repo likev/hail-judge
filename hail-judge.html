@@ -165,8 +165,8 @@
                     htmlstr += '</ul></div></div>'
 				});
                 
-                if(tlogp_count_fulfilled > 0 && 
-                    tlogp_count_fulfilled + max_count_fulfilled >= 3){
+                if(tlogp_count_fulfilled >= 2 && 
+                    tlogp_count_fulfilled + max_count_fulfilled >= 4){
                     $('#show-result').removeClass('alert-info hidden').addClass('alert-danger').text('有潜势');
                 }else{
                 
