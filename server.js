@@ -104,6 +104,12 @@ let startHttpServer = function(){
             let filename = pathname.slice(6);
             console.log(filename);
             static_file(req, res, filename);
+        }else{
+            res.writeHead(404, "Not Found", {'Content-Type': 'text/plain'});
+
+            res.write("This request URL " + pathname + " was not found on this server.");
+
+            res.end();
         }
 		
 	}).listen(8087,()=>{
