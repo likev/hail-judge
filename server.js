@@ -35,6 +35,21 @@ let homepage = function(req, res){
 	});
 }
 
+let static_file = function(req, res, filename){
+    let mime = {
+        "css": "text/css",
+        "js": "text/javascript"
+    };
+    let ext = path.extname(filename).slice(1);
+    
+	res.writeHead(200, {'Content-Type': mime[ext]});
+
+	//console.log(__dirname);
+	let rs = fs.createReadStream( path.join( __dirname, 'static-files',filename ) );
+
+	rs.pipe(res, {end:true});
+}
+
 let newItem = async function(req, res, config){
 	res.writeHead(200, {'Content-Type':'application/json'});
 	
@@ -85,7 +100,11 @@ let startHttpServer = function(){
 			});
 		  		  
 		  
-		}
+		}else if( pathname.slice(0,5) === '/file' ){
+            let filename = pathname.slice(6);
+            console.log(filename);
+            static_file(req, res, filename);
+        }
 		
 	}).listen(8087,()=>{
 	   console.log('listen on port 8087...');
