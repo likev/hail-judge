@@ -91,7 +91,7 @@ let judgeX7 = (TlogP_today)=>{
         
         let T_Td_less_5 = S.contain.some((level)=>{
             
-            return +level > 850 && (S[level].T - S[level].Td)<=5;
+            return +level > 850 && S[level].T > 10 && (S[level].T - S[level].Td)<=5;
            
         });
         
